@@ -20,6 +20,8 @@
 #include <CommonAPI/SomeIP/ProxyAsyncEventCallbackHandler.hpp>
 #include <CommonAPI/SomeIP/AddressTranslator.hpp>
 
+#include "debug.hpp"
+
 namespace CommonAPI {
 namespace SomeIP {
 
@@ -36,6 +38,7 @@ void ErrQueueEntry::process(std::shared_ptr<Connection> _connection) {
 }
 
 void Connection::receive(const std::shared_ptr<vsomeip::message> &_message) {
+    DEBUG_MSG();
     commDirectionType itsDirection =
             (_message->get_message_type() < vsomeip::message_type_e::MT_NOTIFICATION ?
             commDirectionType::STUBRECEIVE : commDirectionType::PROXYRECEIVE);
@@ -65,6 +68,7 @@ void Connection::receive(const std::shared_ptr<vsomeip::message> &_message) {
 }
 
 void Connection::handleProxyReceive(const std::shared_ptr<vsomeip::message> &_message) {
+	DEBUG_MSG();
     sendReceiveMutex_.lock();
 
     session_id_fake_t sessionId = _message->get_session();
@@ -135,6 +139,7 @@ void Connection::handleProxyReceive(const std::shared_ptr<vsomeip::message> &_me
         }
 
         try {
+			DEBUG_MSG();
             itsHandler->onMessageReply(callStatus, Message(_message));
         } catch (const std::exception& e) {
             COMMONAPI_ERROR("Message reply failed(", e.what(), ")");
@@ -161,6 +166,7 @@ void Connection::handleProxyReceive(const std::shared_ptr<vsomeip::message> &_me
 }
 
 void Connection::handleStubReceive(const std::shared_ptr<vsomeip::message> &_message) {
+    DEBUG_MSG();
     if (stubMessageHandler_)
         stubMessageHandler_(Message(_message));
 }
@@ -864,6 +870,7 @@ Connection::unregisterAvailabilityHandler(
 
 void
 Connection::registerService(const Address &_address) {
+    DEBUG_MSG();
     if(!stubMessageHandler_) {
         return;
     }
@@ -918,7 +925,7 @@ Connection::requestService(const Address &_address) {
     instance_id_t instance = _address.getInstance();
     major_version_t majorVersion = _address.getMajorVersion();
     minor_version_t minorVersion = ANY_MINOR_VERSION;
-
+    DEBUG_MSG();
     bool found(false);
     {
         std::lock_guard<std::mutex> lock(requestedServicesMutex_);
@@ -1107,6 +1114,7 @@ const std::shared_ptr<StubManager> Connection::getStubManager() {
 }
 
 void Connection::setStubMessageHandler(MessageHandler_t _handler) {
+    DEBUG_MSG();
     stubMessageHandler_ = _handler;
 }
 
@@ -1265,6 +1273,7 @@ void Connection::proxyPushMessageToMainLoop(const Message &_message,
                                   std::unique_ptr<MessageReplyAsyncHandler> messageReplyAsyncHandler) {
     //add message to the async answers
     {
+        DEBUG_MSG();
         std::lock_guard<std::recursive_mutex> lock(sendReceiveMutex_);
         auto timeoutTime = (std::chrono::steady_clock::time_point) std::chrono::steady_clock::now()
                            + std::chrono::milliseconds(ASYNC_MESSAGE_REPLY_TIMEOUT_MS);

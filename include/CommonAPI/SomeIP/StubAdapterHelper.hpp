@@ -27,6 +27,8 @@
 #include <CommonAPI/SomeIP/SerializableArguments.hpp>
 #include <CommonAPI/SomeIP/StubAdapter.hpp>
 
+#include "debug.hpp"
+
 namespace CommonAPI {
 namespace SomeIP {
 
@@ -134,11 +136,13 @@ class StubAdapterHelper<StubClass_, Stubs_...>:
  protected:
 
     virtual bool onInterfaceMessage(const Message &message) {
+		DEBUG_MSG();
         const method_id_t methodId = message.getMethodId();
         return findDispatcherAndHandle(message, methodId);
     }
 
     bool findDispatcherAndHandle(const Message &message, const method_id_t &methodId) {
+		DEBUG_MSG();
         auto findIterator = stubDispatcherTable_.find(methodId);
         const bool foundInterfaceMemberHandler = (findIterator != stubDispatcherTable_.end());
         bool isMessageHandled = false;
@@ -317,6 +321,7 @@ private:
                                         RemoteEventHandlerType* _remoteEventHandler,
                                         std::shared_ptr<ProxyConnection> _connection,
                                       index_sequence<InArgIndices_...>) {
+        DEBUG_MSG();
         (void)_remoteEventHandler;
         (void)_connection;
 
@@ -391,6 +396,7 @@ public:
                          const std::shared_ptr<StubClass_> &_stub,
                          RemoteEventHandlerType* _remoteEventHandler,
                          std::shared_ptr<ProxyConnection> _connection) {
+        DEBUG_MSG();
         if (!this->isImplemented_)
             return false;
 
@@ -622,6 +628,7 @@ private:
                                       index_sequence<InArgIndices_...>,
                                       index_sequence<OutArgIndices_...>,
                                       index_sequence<ErrorRepliesIndices_...>) {
+        DEBUG_MSG();
         (void) _remoteEventHandler;
 
         if (!_message.isRequestType()) {

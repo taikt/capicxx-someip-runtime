@@ -11,6 +11,7 @@
 #include <CommonAPI/SomeIP/Factory.hpp>
 #include <CommonAPI/SomeIP/StubAdapter.hpp>
 #include <CommonAPI/SomeIP/Connection.hpp>
+#include "debug.hpp"
 
 namespace CommonAPI {
 namespace SomeIP {
@@ -70,6 +71,7 @@ void
 Factory::registerProxyCreateMethod(
     const std::string &_interface,
     ProxyCreateFunction _function) {
+        DEBUG_MSG();
     COMMONAPI_VERBOSE("Registering function for creating \"", _interface,
             "\" proxy.");
     proxyCreateFunctions_[_interface] = _function;
@@ -79,6 +81,7 @@ void
 Factory::registerStubAdapterCreateMethod(
     const std::string &_interface,
     StubAdapterCreateFunction _function) {
+        DEBUG_MSG();
     COMMONAPI_INFO("Registering function for creating \"", _interface,
             "\" stub adapter.");
     stubAdapterCreateFunctions_[_interface] = _function;
@@ -89,6 +92,7 @@ Factory::createProxy(
     const std::string &_domain,
     const std::string &_interface, const std::string &_instance,
     const ConnectionId_t &_connectionId) {
+        DEBUG_MSG();
 
     COMMONAPI_VERBOSE("Creating proxy for \"", _domain, ":", _interface, ":",
             _instance, "\"");
@@ -131,6 +135,7 @@ Factory::createProxy(
     const std::string &_domain,
     const std::string &_interface, const std::string &_instance,
     std::shared_ptr<MainLoopContext> _context) {
+        DEBUG_MSG();
 
     COMMONAPI_VERBOSE("Creating proxy for \"", _domain, ":", _interface, ":",
             _instance, "\"");
@@ -173,6 +178,7 @@ Factory::registerStub(
         const std::string &_domain,
         const std::string &_interface, const std::string &_instance,
         std::shared_ptr<StubBase> _stub, const ConnectionId_t &_connection) {
+            DEBUG_MSG();
 
     COMMONAPI_INFO("Registering stub for \"", _domain, ":", _interface, ":",
             _instance, "\"");
@@ -219,6 +225,7 @@ Factory::registerStub(
         const std::string &_interface, const std::string &_instance,
         std::shared_ptr<StubBase> _stub,
         std::shared_ptr<MainLoopContext> _context) {
+            DEBUG_MSG();
 
     COMMONAPI_INFO("Registering stub for \"", _domain, ":", _interface, ":",
             _instance, "\"");
@@ -261,6 +268,7 @@ Factory::registerStub(
 
 bool
 Factory::registerStubAdapter(std::shared_ptr<StubAdapter> _adapter) {
+    DEBUG_MSG();
     const std::shared_ptr<ProxyConnection> connection
         = _adapter->getConnection();
     CommonAPI::Address address;
@@ -286,6 +294,7 @@ bool
 Factory::unregisterStub(const std::string &_domain,
                         const std::string &_interface,
                         const std::string &_instance) {
+                            DEBUG_MSG();
 
     COMMONAPI_INFO("Deregistering stub for \"", _domain, ":", _interface, ":",
             _instance, "\"");
@@ -330,6 +339,7 @@ Factory::createStubAdapter(
         const std::string &_interface,
         const Address &_address,
         const std::shared_ptr<ProxyConnection> &_connection) {
+            DEBUG_MSG();
     std::shared_ptr<StubAdapter> stubAdapter;
     auto stubAdapterCreateFunctionsIterator
         = stubAdapterCreateFunctions_.find(_interface);
@@ -360,6 +370,7 @@ Factory::isRegisteredService(const std::string &_address) {
 
 bool
 Factory::registerManagedService(const std::shared_ptr<StubAdapter> &_adapter) {
+    DEBUG_MSG();
     if(!registerStubAdapter(_adapter)) {
         COMMONAPI_ERROR("Call to registerStubAdapter(_adapter) failed");
         return false;
@@ -370,6 +381,7 @@ Factory::registerManagedService(const std::shared_ptr<StubAdapter> &_adapter) {
 
 bool
 Factory::unregisterManagedService(const std::string &_address) {
+    DEBUG_MSG();
     CommonAPI::Address capiAddress(_address);
     if(!unregisterStub(capiAddress.getDomain(),
                        capiAddress.getInterface(),
@@ -383,6 +395,7 @@ Factory::unregisterManagedService(const std::string &_address) {
 
 std::shared_ptr<Connection>
 Factory::getConnection(const ConnectionId_t &_connectionId) {
+    DEBUG_MSG();
     std::unique_lock<std::recursive_mutex> itsLock(connectionMutex_);
 
     auto itsConnectionIterator = connections_.find(_connectionId);
@@ -411,6 +424,7 @@ Factory::getConnection(const ConnectionId_t &_connectionId) {
 
 std::shared_ptr<Connection>
 Factory::getConnection(std::shared_ptr<MainLoopContext> _context) {
+    DEBUG_MSG();
     std::unique_lock<std::recursive_mutex> itsLock(connectionMutex_);
 
     if (!_context)
@@ -444,6 +458,7 @@ Factory::getConnection(std::shared_ptr<MainLoopContext> _context) {
 
 void Factory::incrementConnection(
         std::shared_ptr<ProxyConnection> _connection) {
+            DEBUG_MSG();
     std::shared_ptr<Connection> connection;
     std::unique_lock<std::recursive_mutex> itsLock(connectionMutex_);
     for (auto itsConnectionIterator = connections_.begin();
@@ -461,6 +476,7 @@ void Factory::incrementConnection(
 
 void Factory::decrementConnection(
         std::shared_ptr<ProxyConnection> _connection) {
+            DEBUG_MSG();
     std::shared_ptr<Connection> connection;
     std::unique_lock<std::recursive_mutex> itsLock(connectionMutex_);
     for (auto itsConnectionIterator = connections_.begin();
@@ -477,6 +493,7 @@ void Factory::decrementConnection(
 }
 
 void Factory::releaseConnection(const ConnectionId_t& _connectionId) {
+    DEBUG_MSG();
     std::unique_lock<std::recursive_mutex> itsLock(connectionMutex_);
     connections_.erase(_connectionId);
 }

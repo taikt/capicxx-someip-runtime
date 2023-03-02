@@ -18,6 +18,7 @@
 #include <CommonAPI/SomeIP/Message.hpp>
 #include <CommonAPI/SomeIP/ProxyConnection.hpp>
 #include <CommonAPI/SomeIP/SerializableArguments.hpp>
+#include "debug.hpp"
 
 namespace CommonAPI {
 namespace SomeIP {
@@ -56,12 +57,14 @@ class ProxyAsyncCallbackHandler: public ProxyConnection::MessageReplyAsyncHandle
     }
 
     virtual void onMessageReply(const CallStatus &callStatus, const Message &message) {
+		DEBUG_MSG();
         promise_.set_value(handleMessageReply(callStatus, message, typename make_sequence< sizeof...(ArgTypes_) >::type()));
     }
 
  private:
     template<size_t... ArgIndices_>
     inline CallStatus handleMessageReply(const CallStatus _callStatus, const Message &message, index_sequence< ArgIndices_... >) {
+    	DEBUG_MSG();
         CallStatus callStatus = _callStatus;
         if (callStatus == CallStatus::SUCCESS) {
             if (!message.isErrorType()) {

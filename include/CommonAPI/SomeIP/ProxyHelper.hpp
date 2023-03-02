@@ -24,6 +24,8 @@
 #include <CommonAPI/SomeIP/SerializableArguments.hpp>
 #include <CommonAPI/SomeIP/Types.hpp>
 
+#include "debug.hpp"
+
 namespace CommonAPI {
 namespace SomeIP {
 
@@ -226,6 +228,7 @@ struct ProxyHelper<In_<InArgs_...>, Out_<OutArgs_...>> {
             _proxy.isAvailableAsync([&_proxy, _message, sharedMessageReplyAsyncHandler](
                                              const AvailabilityStatus _status,
                                              const Timeout_t remaining) {
+                DEBUG_MSG();
                 if(_status == AvailabilityStatus::AVAILABLE) {
                     //create new call info with remaining timeout. Minimal timeout is 100 ms.
                     Timeout_t newTimeout = remaining;

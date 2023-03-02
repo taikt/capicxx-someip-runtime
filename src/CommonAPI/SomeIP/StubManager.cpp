@@ -5,6 +5,7 @@
 
 #include <CommonAPI/SomeIP/Address.hpp>
 #include <CommonAPI/SomeIP/StubManager.hpp>
+#include "debug.hpp"
 
 namespace CommonAPI {
 namespace SomeIP {
@@ -22,6 +23,7 @@ StubManager::~StubManager() {
 }
 
 void StubManager::registerStubAdapter(std::shared_ptr<StubAdapter> _adapter) {
+    DEBUG_MSG();
     std::shared_ptr<ProxyConnection> connection = connection_.lock();
     if (!connection) {
         COMMONAPI_ERROR("StubManager::registerStubAdapter couldn't lock connection");
@@ -66,6 +68,7 @@ void StubManager::unregisterStubAdapter(std::shared_ptr<StubAdapter> _adapter) {
 }
 
 bool StubManager::handleMessage(const Message &_message) {
+    DEBUG_MSG();
     std::shared_ptr<StubAdapter> foundStubAdapter;
     {
         std::lock_guard<std::mutex> lock(registeredStubAdaptersMutex_);

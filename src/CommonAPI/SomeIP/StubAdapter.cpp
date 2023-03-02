@@ -10,6 +10,8 @@
 #include <CommonAPI/SomeIP/Factory.hpp>
 #include <CommonAPI/SomeIP/AddressTranslator.hpp>
 
+#include "debug.hpp"
+
 namespace CommonAPI {
 namespace SomeIP {
 
@@ -44,6 +46,7 @@ StubAdapter::isManagingInterface() {
 
 const std::shared_ptr<ProxyConnection> &
 StubAdapter::getConnection() const {
+    DEBUG_MSG();
     return connection_;
 }
 
@@ -55,6 +58,7 @@ StubAdapter::onInterfaceMessage(const Message &) {
 void
 StubAdapter::registerEvent(event_id_t _event, const std::set<eventgroup_id_t> &_eventGroups,
         event_type_e _type, reliability_type_e _reliability) {
+    DEBUG_MSG();
     connection_->registerEvent(
             someipAddress_.getService(), someipAddress_.getInstance(),
             _event, _eventGroups, _type, _reliability);
